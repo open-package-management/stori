@@ -1,3 +1,3 @@
 package core
 
-type Registry interface{}
+type Registry struct{}
