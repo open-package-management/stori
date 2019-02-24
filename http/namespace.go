@@ -28,19 +28,51 @@ func namespaceHandler(reg core.Registry) http.HandlerFunc {
 		var namespace string
 		namespace, req.URL.Path = shiftPath(req.URL.Path)
 
+		ctx := context.WithValue(req.Context(), namespaceKey, namespace)
+		req = req.WithContext(ctx)
 		if req.URL.Path != "/" {
 			resource, _ := shiftPath(req.URL.Path)
-			ctx := context.WithValue(req.Context(), namespaceKey, namespace)
 			switch resource {
 			case "projects":
 				handler := projectHandler(reg)
-
-				req = req.WithContext(ctx)
 				handler.ServeHTTP(w, req)
 			}
+		}
+
+		switch req.Method {
+		case "GET":
+			handler := getNamespaceHandler(reg)
+			handler.ServeHTTP(w, req)
+		case "PUT":
+			handler := putNamespaceHandler(reg)
+			handler.ServeHTTP(w, req)
+		case "DELETE":
+			handler := deleteNamespaceHandler(reg)
+			handler.ServeHTTP(w, req)
 		}
 
 	}
 	return http.HandlerFunc(fn)
 
+}
+
+func getNamespaceHandler(reg core.Registry) http.HandlerFunc {
+	fn := func(w http.ResponseWriter, req *http.Request) {
+		w.WriteHeader(http.StatusNotImplemented)
+	}
+	return http.HandlerFunc(fn)
+}
+
+func putNamespaceHandler(reg core.Registry) http.HandlerFunc {
+	fn := func(w http.ResponseWriter, req *http.Request) {
+		w.WriteHeader(http.StatusNotImplemented)
+	}
+	return http.HandlerFunc(fn)
+}
+
+func deleteNamespaceHandler(reg core.Registry) http.HandlerFunc {
+	fn := func(w http.ResponseWriter, req *http.Request) {
+		w.WriteHeader(http.StatusNotImplemented)
+	}
+	return http.HandlerFunc(fn)
 }

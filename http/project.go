@@ -28,17 +28,49 @@ func projectHandler(reg core.Registry) http.HandlerFunc {
 		var project string
 		project, req.URL.Path = shiftPath(req.URL.Path)
 
+		ctx := context.WithValue(req.Context(), projectKey, project)
+		req = req.WithContext(ctx)
 		if req.URL.Path != "/" {
 			resource, _ := shiftPath(req.URL.Path)
-			ctx := context.WithValue(req.Context(), projectKey, project)
 			switch resource {
 			case "repositories":
 				handler := repoHandler(reg)
-
-				req = req.WithContext(ctx)
 				handler.ServeHTTP(w, req)
 			}
 		}
+
+		switch req.Method {
+		case "GET":
+			handler := getProjectHandler(reg)
+			handler.ServeHTTP(w, req)
+		case "PUT":
+			handler := putProjectHandler(reg)
+			handler.ServeHTTP(w, req)
+		case "DELETE":
+			handler := deleteProjectHandler(reg)
+			handler.ServeHTTP(w, req)
+		}
+	}
+	return http.HandlerFunc(fn)
+}
+
+func getProjectHandler(reg core.Registry) http.HandlerFunc {
+	fn := func(w http.ResponseWriter, req *http.Request) {
+		w.WriteHeader(http.StatusNotImplemented)
+	}
+	return http.HandlerFunc(fn)
+}
+
+func putProjectHandler(reg core.Registry) http.HandlerFunc {
+	fn := func(w http.ResponseWriter, req *http.Request) {
+		w.WriteHeader(http.StatusNotImplemented)
+	}
+	return http.HandlerFunc(fn)
+}
+
+func deleteProjectHandler(reg core.Registry) http.HandlerFunc {
+	fn := func(w http.ResponseWriter, req *http.Request) {
+		w.WriteHeader(http.StatusNotImplemented)
 	}
 	return http.HandlerFunc(fn)
 }
