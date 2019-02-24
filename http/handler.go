@@ -24,8 +24,8 @@ import (
 
 type contextKey string
 
-// StoriHandler is the handler used to serve the registry.
-func StoriHandler(reg core.Registry) http.HandlerFunc {
+// Handler is the handler used to serve the registry.
+func Handler(reg core.Registry) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, req *http.Request) {
 		var resource string
 		resource, req.URL.Path = shiftPath(req.URL.Path)
