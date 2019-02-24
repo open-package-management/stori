@@ -15,7 +15,6 @@
 package http
 
 import (
-	"fmt"
 	"net/http"
 	"path"
 	"strings"
@@ -42,12 +41,10 @@ func Handler(reg core.Registry) http.HandlerFunc {
 
 		switch resource {
 		case "namespaces":
-			fmt.Println("namespace handler activated")
-			handler := namespaceHandler(reg)
+			handler := baseNamespaceHandler(reg)
 			handler.ServeHTTP(w, req)
 			return
 		default:
-			fmt.Println("not found handler activated")
 			handler := notFoundHandler()
 			handler.ServeHTTP(w, req)
 			return
@@ -59,6 +56,13 @@ func Handler(reg core.Registry) http.HandlerFunc {
 func notFoundHandler() http.HandlerFunc {
 	fn := func(w http.ResponseWriter, req *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
+	}
+	return http.HandlerFunc(fn)
+}
+
+func notImplementedHandler() http.HandlerFunc {
+	fn := func(w http.ResponseWriter, req *http.Request) {
+		w.WriteHeader(http.StatusNotImplemented)
 	}
 	return http.HandlerFunc(fn)
 }

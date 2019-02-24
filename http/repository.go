@@ -22,21 +22,41 @@ import (
 	"github.com/open-package-management/stori/core"
 )
 
-var repositoryKey contextKey = "repository"
+var repoContextKey contextKey = "repository"
+
+func baseRepoHandler(reg core.Registry) http.HandlerFunc {
+	fn := func(w http.ResponseWriter, req *http.Request) {
+		if req.URL.Path != "/" {
+			var repo string
+			repo, req.URL.Path = shiftPath(req.URL.Path)
+			ctx := context.WithValue(
+				req.Context(),
+				repoContextKey,
+				repo,
+			)
+			handler := repoHandler(reg)
+			handler.ServeHTTP(w, req.WithContext(ctx))
+			return
+		}
+
+		switch req.Method {
+		case "GET":
+			handler := listReposHandler(reg)
+			handler.ServeHTTP(w, req)
+		}
+		return
+	}
+	return http.HandlerFunc(fn)
+}
 
 func repoHandler(reg core.Registry) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, req *http.Request) {
-		var repo string
-		repo, req.URL.Path = shiftPath(req.URL.Path)
-
-		ctx := context.WithValue(req.Context(), repositoryKey, repo)
-		req = req.WithContext(ctx)
 
 		if req.URL.Path != "/" {
-			resource, _ := shiftPath(req.URL.Path)
+			var resource string
+			resource, req.URL.Path = shiftPath(req.URL.Path)
 			switch resource {
 			default:
-				fmt.Println("not found handler activated")
 				handler := notFoundHandler()
 				handler.ServeHTTP(w, req)
 				return
@@ -45,42 +65,68 @@ func repoHandler(reg core.Registry) http.HandlerFunc {
 
 		switch req.Method {
 		case "GET":
-			fmt.Println("get repo handler activated")
 			handler := getRepoHandler(reg)
 			handler.ServeHTTP(w, req)
-			return
 		case "PUT":
-			fmt.Println("put repo handler activated")
 			handler := putRepoHandler(reg)
 			handler.ServeHTTP(w, req)
-			return
 		case "DELETE":
-			fmt.Println("delete repo handler activated")
 			handler := deleteRepoHandler(reg)
 			handler.ServeHTTP(w, req)
-			return
 		}
+		return
+	}
+	return http.HandlerFunc(fn)
+}
+
+func listReposHandler(reg core.Registry) http.HandlerFunc {
+	fn := func(w http.ResponseWriter, req *http.Request) {
+		ctx := req.Context()
+		namespace := namespaceFromContext(ctx)
+		project := projectFromContext(ctx)
+		fmt.Fprintf(w, "LIST Repos Handler\n namespace: %s\nproject: %s", namespace, project)
+		w.WriteHeader(http.StatusOK)
 	}
 	return http.HandlerFunc(fn)
 }
 
 func getRepoHandler(reg core.Registry) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, req *http.Request) {
-		w.WriteHeader(http.StatusNotImplemented)
+		ctx := req.Context()
+		namespace := namespaceFromContext(ctx)
+		project := projectFromContext(ctx)
+		repo := repoFromContext(ctx)
+		fmt.Fprintf(w, "GET Repo Handler\n namespace: %s\nproject: %s\nrepo: %s", namespace, project, repo)
+		w.WriteHeader(http.StatusOK)
 	}
 	return http.HandlerFunc(fn)
 }
 
 func putRepoHandler(reg core.Registry) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, req *http.Request) {
-		w.WriteHeader(http.StatusNotImplemented)
+		ctx := req.Context()
+		namespace := namespaceFromContext(ctx)
+		project := projectFromContext(ctx)
+		repo := repoFromContext(ctx)
+		fmt.Fprintf(w, "PUT Repo Handler\n namespace: %s\nproject: %s\nrepo: %s", namespace, project, repo)
+		w.WriteHeader(http.StatusOK)
 	}
 	return http.HandlerFunc(fn)
 }
 
 func deleteRepoHandler(reg core.Registry) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, req *http.Request) {
-		w.WriteHeader(http.StatusNotImplemented)
+		ctx := req.Context()
+		namespace := namespaceFromContext(ctx)
+		project := projectFromContext(ctx)
+		repo := repoFromContext(ctx)
+		fmt.Fprintf(w, "DELETE Repo Handler\n namespace: %s\nproject: %s\nrepo: %s", namespace, project, repo)
+		w.WriteHeader(http.StatusOK)
 	}
 	return http.HandlerFunc(fn)
+}
+
+func repoFromContext(ctx context.Context) string {
+	repo := ctx.Value(repoContextKey).(string)
+	return repo
 }
