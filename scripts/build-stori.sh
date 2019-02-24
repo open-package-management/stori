@@ -16,7 +16,7 @@ fi
 build() {
 	go build \
 	-ldflags "-X main.Version=$1 -X main.Commit=$2" \
-	-o bin/stori github.com/atlaskerr/stori/cmd/stori
+	-o bin/stori github.com/open-package-management/stori/cmd
 }
 
 build $VERSION $COMMIT
