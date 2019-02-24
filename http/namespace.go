@@ -36,6 +36,7 @@ func namespaceHandler(reg core.Registry) http.HandlerFunc {
 			case "projects":
 				handler := projectHandler(reg)
 				handler.ServeHTTP(w, req)
+				return
 			}
 		}
 
@@ -43,12 +44,15 @@ func namespaceHandler(reg core.Registry) http.HandlerFunc {
 		case "GET":
 			handler := getNamespaceHandler(reg)
 			handler.ServeHTTP(w, req)
+			return
 		case "PUT":
 			handler := putNamespaceHandler(reg)
 			handler.ServeHTTP(w, req)
+			return
 		case "DELETE":
 			handler := deleteNamespaceHandler(reg)
 			handler.ServeHTTP(w, req)
+			return
 		}
 
 	}

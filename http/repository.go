@@ -41,12 +41,15 @@ func repoHandler(reg core.Registry) http.HandlerFunc {
 		case "GET":
 			handler := getRepoHandler(reg)
 			handler.ServeHTTP(w, req)
+			return
 		case "PUT":
 			handler := putRepoHandler(reg)
 			handler.ServeHTTP(w, req)
+			return
 		case "DELETE":
 			handler := deleteRepoHandler(reg)
 			handler.ServeHTTP(w, req)
+			return
 		}
 	}
 	return http.HandlerFunc(fn)

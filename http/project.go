@@ -36,6 +36,7 @@ func projectHandler(reg core.Registry) http.HandlerFunc {
 			case "repositories":
 				handler := repoHandler(reg)
 				handler.ServeHTTP(w, req)
+				return
 			}
 		}
 
@@ -43,12 +44,15 @@ func projectHandler(reg core.Registry) http.HandlerFunc {
 		case "GET":
 			handler := getProjectHandler(reg)
 			handler.ServeHTTP(w, req)
+			return
 		case "PUT":
 			handler := putProjectHandler(reg)
 			handler.ServeHTTP(w, req)
+			return
 		case "DELETE":
 			handler := deleteProjectHandler(reg)
 			handler.ServeHTTP(w, req)
+			return
 		}
 	}
 	return http.HandlerFunc(fn)
