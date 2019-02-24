@@ -16,6 +16,7 @@ package http
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/open-package-management/stori/core"
@@ -34,7 +35,13 @@ func namespaceHandler(reg core.Registry) http.HandlerFunc {
 			resource, _ := shiftPath(req.URL.Path)
 			switch resource {
 			case "projects":
+				fmt.Println("project handler activated")
 				handler := projectHandler(reg)
+				handler.ServeHTTP(w, req)
+				return
+			default:
+				fmt.Println("not found handler activated")
+				handler := notFoundHandler()
 				handler.ServeHTTP(w, req)
 				return
 			}
@@ -42,14 +49,17 @@ func namespaceHandler(reg core.Registry) http.HandlerFunc {
 
 		switch req.Method {
 		case "GET":
+			fmt.Println("get namespace handler activated")
 			handler := getNamespaceHandler(reg)
 			handler.ServeHTTP(w, req)
 			return
 		case "PUT":
+			fmt.Println("put namespace handler activated")
 			handler := putNamespaceHandler(reg)
 			handler.ServeHTTP(w, req)
 			return
 		case "DELETE":
+			fmt.Println("delete namespace handler activated")
 			handler := deleteNamespaceHandler(reg)
 			handler.ServeHTTP(w, req)
 			return

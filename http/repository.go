@@ -16,6 +16,7 @@ package http
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/open-package-management/stori/core"
@@ -34,19 +35,27 @@ func repoHandler(reg core.Registry) http.HandlerFunc {
 		if req.URL.Path != "/" {
 			resource, _ := shiftPath(req.URL.Path)
 			switch resource {
+			default:
+				fmt.Println("not found handler activated")
+				handler := notFoundHandler()
+				handler.ServeHTTP(w, req)
+				return
 			}
 		}
 
 		switch req.Method {
 		case "GET":
+			fmt.Println("get repo handler activated")
 			handler := getRepoHandler(reg)
 			handler.ServeHTTP(w, req)
 			return
 		case "PUT":
+			fmt.Println("put repo handler activated")
 			handler := putRepoHandler(reg)
 			handler.ServeHTTP(w, req)
 			return
 		case "DELETE":
+			fmt.Println("delete repo handler activated")
 			handler := deleteRepoHandler(reg)
 			handler.ServeHTTP(w, req)
 			return

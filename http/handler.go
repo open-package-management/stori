@@ -15,12 +15,22 @@
 package http
 
 import (
+	"fmt"
 	"net/http"
 	"path"
 	"strings"
 
 	"github.com/open-package-management/stori/core"
 )
+
+func shiftPath(p string) (head, tail string) {
+	p = path.Clean("/" + p)
+	i := strings.Index(p[1:], "/") + 1
+	if i <= 0 {
+		return p[1:], "/"
+	}
+	return p[1:i], p[i:]
+}
 
 type contextKey string
 
@@ -32,18 +42,23 @@ func Handler(reg core.Registry) http.HandlerFunc {
 
 		switch resource {
 		case "namespaces":
+			fmt.Println("namespace handler activated")
 			handler := namespaceHandler(reg)
 			handler.ServeHTTP(w, req)
+			return
+		default:
+			fmt.Println("not found handler activated")
+			handler := notFoundHandler()
+			handler.ServeHTTP(w, req)
+			return
 		}
 	}
 	return http.HandlerFunc(fn)
 }
 
-func shiftPath(p string) (head, tail string) {
-	p = path.Clean("/" + p)
-	i := strings.Index(p[1:], "/") + 1
-	if i <= 0 {
-		return p[1:], "/"
+func notFoundHandler() http.HandlerFunc {
+	fn := func(w http.ResponseWriter, req *http.Request) {
+		w.WriteHeader(http.StatusNotFound)
 	}
-	return p[1:i], p[i:]
+	return http.HandlerFunc(fn)
 }
