@@ -43,7 +43,13 @@ func baseProjectHandler(reg core.Registry) http.HandlerFunc {
 
 		switch req.Method {
 		case "GET":
-			handler := listProjectsHandler(reg)
+			handler := baseGetProjectHandler(reg)
+			handler.ServeHTTP(w, req)
+		case "HEAD":
+			handler := baseHeadProjectHandler(reg)
+			handler.ServeHTTP(w, req)
+		default:
+			handler := defaultHandler()
 			handler.ServeHTTP(w, req)
 		}
 		return
@@ -61,7 +67,7 @@ func projectHandler(reg core.Registry) http.HandlerFunc {
 				handler := baseRepoHandler(reg)
 				handler.ServeHTTP(w, req)
 			default:
-				handler := notFoundHandler()
+				handler := defaultHandler()
 				handler.ServeHTTP(w, req)
 			}
 			return
@@ -71,11 +77,17 @@ func projectHandler(reg core.Registry) http.HandlerFunc {
 		case "GET":
 			handler := getProjectHandler(reg)
 			handler.ServeHTTP(w, req)
+		case "HEAD":
+			handler := headProjectHandler(reg)
+			handler.ServeHTTP(w, req)
 		case "PUT":
 			handler := putProjectHandler(reg)
 			handler.ServeHTTP(w, req)
 		case "DELETE":
 			handler := deleteProjectHandler(reg)
+			handler.ServeHTTP(w, req)
+		default:
+			handler := defaultHandler()
 			handler.ServeHTTP(w, req)
 		}
 		return
@@ -83,12 +95,19 @@ func projectHandler(reg core.Registry) http.HandlerFunc {
 	return http.HandlerFunc(fn)
 }
 
-func listProjectsHandler(reg core.Registry) http.HandlerFunc {
+func baseGetProjectHandler(reg core.Registry) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, req *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		ctx := req.Context()
 		namespace := namespaceFromContext(ctx)
 		fmt.Fprintf(w, "LIST Projects Handler\nnamespace: %s", namespace)
+	}
+	return http.HandlerFunc(fn)
+}
+
+func baseHeadProjectHandler(reg core.Registry) http.HandlerFunc {
+	fn := func(w http.ResponseWriter, req *http.Request) {
+		w.WriteHeader(http.StatusOK)
 	}
 	return http.HandlerFunc(fn)
 }
@@ -100,6 +119,13 @@ func getProjectHandler(reg core.Registry) http.HandlerFunc {
 		namespace := namespaceFromContext(ctx)
 		project := projectFromContext(ctx)
 		fmt.Fprintf(w, "GET Project Handler\nnamespace: %s\nproject: %s", namespace, project)
+	}
+	return http.HandlerFunc(fn)
+}
+
+func headProjectHandler(reg core.Registry) http.HandlerFunc {
+	fn := func(w http.ResponseWriter, req *http.Request) {
+		w.WriteHeader(http.StatusOK)
 	}
 	return http.HandlerFunc(fn)
 }

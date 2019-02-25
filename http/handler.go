@@ -43,11 +43,24 @@ func Handler(reg core.Registry) http.HandlerFunc {
 		case "namespaces":
 			handler := baseNamespaceHandler(reg)
 			handler.ServeHTTP(w, req)
-			return
 		default:
+			handler := defaultHandler()
+			handler.ServeHTTP(w, req)
+		}
+		return
+	}
+	return http.HandlerFunc(fn)
+}
+
+func defaultHandler() http.HandlerFunc {
+	fn := func(w http.ResponseWriter, req *http.Request) {
+		switch req.Method {
+		case "GET", "HEAD":
 			handler := notFoundHandler()
 			handler.ServeHTTP(w, req)
-			return
+		default:
+			handler := notImplementedHandler()
+			handler.ServeHTTP(w, req)
 		}
 	}
 	return http.HandlerFunc(fn)

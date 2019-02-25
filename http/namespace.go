@@ -49,7 +49,7 @@ func baseNamespaceHandler(reg core.Registry) http.HandlerFunc {
 			handler := baseHeadNamespaceHandler(reg)
 			handler.ServeHTTP(w, req)
 		default:
-			handler := notImplementedHandler()
+			handler := defaultHandler()
 			handler.ServeHTTP(w, req)
 		}
 		return
@@ -90,7 +90,7 @@ func namespaceHandler(reg core.Registry) http.HandlerFunc {
 			handler := deleteNamespaceHandler(reg)
 			handler.ServeHTTP(w, req)
 		default:
-			handler := notFoundHandler()
+			handler := defaultHandler()
 			handler.ServeHTTP(w, req)
 		}
 		return
