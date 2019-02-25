@@ -34,6 +34,7 @@ func startServer(cmd *cobra.Command, args []string) {
 
 	srv := http.Server{Handler: handler}
 	go srv.Serve(ln)
+	colorstring.Printf("[bold]Server listening on port 5000.\n")
 
 	// Wait for a signal to stop the server.
 	sigs := make(chan os.Signal, 1)
