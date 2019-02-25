@@ -27,18 +27,17 @@ var projectContextKey contextKey = "project"
 func baseProjectHandler(reg core.Registry) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, req *http.Request) {
 		if req.URL.Path != "/" {
+
 			var project string
 			project, req.URL.Path = shiftPath(req.URL.Path)
-
 			ctx := context.WithValue(
 				req.Context(),
 				projectContextKey,
 				project,
 			)
-			req = req.WithContext(ctx)
 
 			handler := projectHandler(reg)
-			handler.ServeHTTP(w, req)
+			handler.ServeHTTP(w, req.WithContext(ctx))
 			return
 		}
 
@@ -59,12 +58,13 @@ func projectHandler(reg core.Registry) http.HandlerFunc {
 			resource, req.URL.Path = shiftPath(req.URL.Path)
 			switch resource {
 			case "repositories":
-				handler := repoHandler(reg)
+				handler := baseRepoHandler(reg)
 				handler.ServeHTTP(w, req)
 			default:
 				handler := notFoundHandler()
 				handler.ServeHTTP(w, req)
 			}
+			return
 		}
 
 		switch req.Method {
@@ -85,43 +85,43 @@ func projectHandler(reg core.Registry) http.HandlerFunc {
 
 func listProjectsHandler(reg core.Registry) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, req *http.Request) {
+		w.WriteHeader(http.StatusOK)
 		ctx := req.Context()
 		namespace := namespaceFromContext(ctx)
-		fmt.Fprintf(w, "LIST Project Handler\n namespace: %s", namespace)
-		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "LIST Projects Handler\nnamespace: %s", namespace)
 	}
 	return http.HandlerFunc(fn)
 }
 
 func getProjectHandler(reg core.Registry) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, req *http.Request) {
+		w.WriteHeader(http.StatusOK)
 		ctx := req.Context()
 		namespace := namespaceFromContext(ctx)
 		project := projectFromContext(ctx)
-		fmt.Fprintf(w, "GET Project Handler\n namespace: %s\nproject: %s", namespace, project)
-		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "GET Project Handler\nnamespace: %s\nproject: %s", namespace, project)
 	}
 	return http.HandlerFunc(fn)
 }
 
 func putProjectHandler(reg core.Registry) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, req *http.Request) {
+		w.WriteHeader(http.StatusOK)
 		ctx := req.Context()
 		namespace := namespaceFromContext(ctx)
 		project := projectFromContext(ctx)
-		fmt.Fprintf(w, "PUT Project Handler\n namespace: %s\nproject: %s", namespace, project)
-		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "PUT Project Handler\nnamespace: %s\nproject: %s", namespace, project)
 	}
 	return http.HandlerFunc(fn)
 }
 
 func deleteProjectHandler(reg core.Registry) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, req *http.Request) {
+		w.WriteHeader(http.StatusOK)
 		ctx := req.Context()
 		namespace := namespaceFromContext(ctx)
 		project := projectFromContext(ctx)
-		fmt.Fprintf(w, "DELETE Project Handler\n namespace: %s\nproject: %s", namespace, project)
-		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "DELETE Project Handler\nnamespace: %s\nproject: %s", namespace, project)
 	}
 	return http.HandlerFunc(fn)
 }

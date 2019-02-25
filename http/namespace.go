@@ -67,7 +67,7 @@ func namespaceHandler(reg core.Registry) http.HandlerFunc {
 			resource, req.URL.Path = shiftPath(req.URL.Path)
 			switch resource {
 			case "projects":
-				handler := projectHandler(reg)
+				handler := baseProjectHandler(reg)
 				handler.ServeHTTP(w, req)
 			default:
 				handler := notFoundHandler()
@@ -118,7 +118,7 @@ func getNamespaceHandler(reg core.Registry) http.HandlerFunc {
 		w.WriteHeader(http.StatusOK)
 		ctx := req.Context()
 		namespace := namespaceFromContext(ctx)
-		fmt.Fprintf(w, "GET Namespace Handler\n namespace: %s", namespace)
+		fmt.Fprintf(w, "GET Namespace Handler\nnamespace: %s", namespace)
 	}
 	return http.HandlerFunc(fn)
 }
@@ -135,7 +135,7 @@ func putNamespaceHandler(reg core.Registry) http.HandlerFunc {
 		w.WriteHeader(http.StatusOK)
 		ctx := req.Context()
 		namespace := namespaceFromContext(ctx)
-		fmt.Fprintf(w, "PUT Namespace Handler\n namespace: %s", namespace)
+		fmt.Fprintf(w, "PUT Namespace Handler\nnamespace: %s", namespace)
 	}
 	return http.HandlerFunc(fn)
 }
@@ -145,7 +145,7 @@ func deleteNamespaceHandler(reg core.Registry) http.HandlerFunc {
 		w.WriteHeader(http.StatusOK)
 		ctx := req.Context()
 		namespace := namespaceFromContext(ctx)
-		fmt.Fprintf(w, "DELETE Namespace Handler\n namespace: %s", namespace)
+		fmt.Fprintf(w, "DELETE Namespace Handler\nnamespace: %s", namespace)
 	}
 	return http.HandlerFunc(fn)
 }
