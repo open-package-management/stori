@@ -43,6 +43,9 @@ func Handler(reg core.Registry) http.HandlerFunc {
 		case "namespaces":
 			handler := baseNamespaceHandler(reg)
 			handler.ServeHTTP(w, req)
+		case "metrics":
+			handler := metricsHandler(reg)
+			handler.ServeHTTP(w, req)
 		default:
 			handler := defaultHandler()
 			handler.ServeHTTP(w, req)
