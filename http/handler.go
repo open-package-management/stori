@@ -52,6 +52,9 @@ func Handler(reg core.Registry) http.HandlerFunc {
 		case "live":
 			handler := livenessHandler(reg)
 			handler.ServeHTTP(w, req)
+		case "v2":
+			handler := distributionHandler(reg)
+			handler.ServeHTTP(w, req)
 		default:
 			handler := defaultHandler()
 			handler.ServeHTTP(w, req)
