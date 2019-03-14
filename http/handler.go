@@ -46,6 +46,12 @@ func Handler(reg core.Registry) http.HandlerFunc {
 		case "metrics":
 			handler := metricsHandler(reg)
 			handler.ServeHTTP(w, req)
+		case "ready":
+			handler := readinessHandler(reg)
+			handler.ServeHTTP(w, req)
+		case "live":
+			handler := livenessHandler(reg)
+			handler.ServeHTTP(w, req)
 		default:
 			handler := defaultHandler()
 			handler.ServeHTTP(w, req)
