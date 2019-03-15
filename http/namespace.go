@@ -16,10 +16,10 @@ package http
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	"github.com/open-package-management/stori/core"
+	//	spec "github.com/open-package-management/go-specs/v1"
 )
 
 var namespaceContextKey contextKey = "namespace"
@@ -27,7 +27,6 @@ var namespaceContextKey contextKey = "namespace"
 func baseNamespaceHandler(reg core.Registry) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, req *http.Request) {
 		if req.URL.Path != "/" {
-
 			var namespace string
 			namespace, req.URL.Path = shiftPath(req.URL.Path)
 			ctx := context.WithValue(
@@ -35,7 +34,6 @@ func baseNamespaceHandler(reg core.Registry) http.HandlerFunc {
 				namespaceContextKey,
 				namespace,
 			)
-
 			handler := namespaceHandler(reg)
 			handler.ServeHTTP(w, req.WithContext(ctx))
 			return
@@ -61,7 +59,6 @@ func baseNamespaceHandler(reg core.Registry) http.HandlerFunc {
 
 func namespaceHandler(reg core.Registry) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, req *http.Request) {
-
 		if req.URL.Path != "/" {
 			var resource string
 			resource, req.URL.Path = shiftPath(req.URL.Path)
@@ -70,7 +67,7 @@ func namespaceHandler(reg core.Registry) http.HandlerFunc {
 				handler := baseProjectHandler(reg)
 				handler.ServeHTTP(w, req)
 			default:
-				handler := notFoundHandler()
+				handler := defaultHandler()
 				handler.ServeHTTP(w, req)
 			}
 			return
@@ -101,7 +98,6 @@ func namespaceHandler(reg core.Registry) http.HandlerFunc {
 func baseGetNamespaceHandler(reg core.Registry) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, req *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, "LIST Namespaces Handler")
 	}
 	return http.HandlerFunc(fn)
 }
@@ -116,9 +112,6 @@ func baseHeadNamespaceHandler(reg core.Registry) http.HandlerFunc {
 func getNamespaceHandler(reg core.Registry) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, req *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		ctx := req.Context()
-		namespace := namespaceFromContext(ctx)
-		fmt.Fprintf(w, "GET Namespace Handler\nnamespace: %s", namespace)
 	}
 	return http.HandlerFunc(fn)
 }
@@ -133,9 +126,6 @@ func headNamespaceHandler(reg core.Registry) http.HandlerFunc {
 func putNamespaceHandler(reg core.Registry) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, req *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		ctx := req.Context()
-		namespace := namespaceFromContext(ctx)
-		fmt.Fprintf(w, "PUT Namespace Handler\nnamespace: %s", namespace)
 	}
 	return http.HandlerFunc(fn)
 }
@@ -143,9 +133,6 @@ func putNamespaceHandler(reg core.Registry) http.HandlerFunc {
 func deleteNamespaceHandler(reg core.Registry) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, req *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		ctx := req.Context()
-		namespace := namespaceFromContext(ctx)
-		fmt.Fprintf(w, "DELETE Namespace Handler\nnamespace: %s", namespace)
 	}
 	return http.HandlerFunc(fn)
 }

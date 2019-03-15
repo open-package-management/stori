@@ -22,15 +22,6 @@ import (
 	"github.com/open-package-management/stori/core"
 )
 
-func shiftPath(p string) (head, tail string) {
-	p = path.Clean("/" + p)
-	i := strings.Index(p[1:], "/") + 1
-	if i <= 0 {
-		return p[1:], "/"
-	}
-	return p[1:i], p[i:]
-}
-
 type contextKey string
 
 // Handler is the handler used to serve the registry.
@@ -74,6 +65,7 @@ func defaultHandler() http.HandlerFunc {
 			handler := notImplementedHandler()
 			handler.ServeHTTP(w, req)
 		}
+		return
 	}
 	return http.HandlerFunc(fn)
 }
@@ -90,4 +82,13 @@ func notImplementedHandler() http.HandlerFunc {
 		w.WriteHeader(http.StatusNotImplemented)
 	}
 	return http.HandlerFunc(fn)
+}
+
+func shiftPath(p string) (head, tail string) {
+	p = path.Clean("/" + p)
+	i := strings.Index(p[1:], "/") + 1
+	if i <= 0 {
+		return p[1:], "/"
+	}
+	return p[1:i], p[i:]
 }
