@@ -16,10 +16,12 @@ package http
 
 import (
 	"context"
+	//	"io"
+	"encoding/json"
 	"net/http"
 
+	specV1 "github.com/open-package-management/go-specs/v1"
 	"github.com/open-package-management/stori/core"
-	//	spec "github.com/open-package-management/go-specs/v1"
 )
 
 var namespaceContextKey contextKey = "namespace"
@@ -97,9 +99,72 @@ func namespaceHandler(reg core.Registry) http.HandlerFunc {
 
 func baseGetNamespaceHandler(reg core.Registry) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, req *http.Request) {
-		w.WriteHeader(http.StatusOK)
+		namespaces, err := reg.NamespaceList()
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		list, err := formatNamespaceList(namespaces, specV1.MediaTypeNamespace)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		enc := json.NewEncoder(w)
+		if err := enc.Encode(list); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
 	}
 	return http.HandlerFunc(fn)
+}
+
+func formatNamespaceList(namespaces *[]core.Namespace, mediaType string) (interface{}, error) {
+	switch mediaType {
+	case specV1.MediaTypeNamespace:
+		list := formatNamespaceListV1(namespaces)
+		return list, nil
+	default:
+		return nil, nil
+	}
+}
+
+func formatNamespaceListV1(namespaces *[]core.Namespace) specV1.NamespaceList {
+	var list specV1.NamespaceList
+	for idx, ns := range *namespaces {
+		quotas := ns.Quotas()
+		projects := quotas.Projects
+		storage := quotas.Storage
+		repos := quotas.Repositories
+
+		nsQuotas := specV1.NamespaceQuotas{
+			Storage: specV1.QuotaDescriptor{
+				Limit: storage.Limit(),
+				Used:  storage.Used(),
+			},
+			Repositories: specV1.QuotaDescriptor{
+				Limit: repos.Limit(),
+				Used:  repos.Used(),
+			},
+			Projects: specV1.QuotaDescriptor{
+				Limit: projects.Limit(),
+				Used:  projects.Used(),
+			},
+		}
+
+		list.Namespaces[idx] = specV1.Namespace{
+			Name:        ns.Name(),
+			Status:      ns.Status(),
+			Quotas:      nsQuotas,
+			Labels:      ns.Labels(),
+			Annotations: ns.Annotations(),
+			Created:     *ns.CreatedTimestamp(),
+			Deleted:     *ns.DeletedTimestamp(),
+		}
+	}
+	return list
 }
 
 func baseHeadNamespaceHandler(reg core.Registry) http.HandlerFunc {

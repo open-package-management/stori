@@ -14,4 +14,70 @@
 
 package core
 
+import (
+	"time"
+)
+
 type Registry struct{}
+
+type Namespace struct {
+	name        string
+	status      string
+	quotas      NamespaceQuotas
+	created     *time.Time
+	deleted     *time.Time
+	labels      map[string]string
+	annotations map[string]string
+}
+
+type NamespaceQuotas struct {
+	Storage      Quota
+	Repositories Quota
+	Projects     Quota
+}
+
+type Quota struct {
+	limit uint64
+	used  uint64
+}
+
+func (q *Quota) Limit() uint64 {
+	return q.limit
+}
+
+func (q *Quota) Used() uint64 {
+	return q.limit
+}
+
+func (ns *Namespace) Name() string {
+	return ns.name
+}
+
+func (ns *Namespace) Status() string {
+	return ns.status
+}
+
+func (ns *Namespace) Quotas() NamespaceQuotas {
+	return ns.quotas
+}
+
+func (ns *Namespace) Labels() map[string]string {
+	return ns.labels
+}
+
+func (ns *Namespace) Annotations() map[string]string {
+	return ns.labels
+}
+
+func (ns *Namespace) CreatedTimestamp() *time.Time {
+	return ns.created
+}
+
+func (ns *Namespace) DeletedTimestamp() *time.Time {
+	return ns.deleted
+}
+
+// NamespaceList retrieves all namespaces in a registry.
+func (reg *Registry) NamespaceList() (*[]Namespace, error) {
+	return nil, nil
+}
