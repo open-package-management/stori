@@ -16,7 +16,6 @@ package http
 
 import (
 	"context"
-	//	"io"
 	"encoding/json"
 	"net/http"
 
@@ -26,7 +25,7 @@ import (
 
 var namespaceContextKey contextKey = "namespace"
 
-func baseNamespaceHandler(reg core.Registry) http.HandlerFunc {
+func namespacesHandler(reg core.Registry) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, req *http.Request) {
 		if req.URL.Path != "/" {
 			var namespace string
@@ -43,10 +42,10 @@ func baseNamespaceHandler(reg core.Registry) http.HandlerFunc {
 
 		switch req.Method {
 		case "GET":
-			handler := baseGetNamespaceHandler(reg)
+			handler := getNamespacesHandler(reg)
 			handler.ServeHTTP(w, req)
 		case "HEAD":
-			handler := baseHeadNamespaceHandler(reg)
+			handler := headNamespacesHandler(reg)
 			handler.ServeHTTP(w, req)
 		default:
 			handler := defaultHandler()
@@ -66,7 +65,7 @@ func namespaceHandler(reg core.Registry) http.HandlerFunc {
 			resource, req.URL.Path = shiftPath(req.URL.Path)
 			switch resource {
 			case "projects":
-				handler := baseProjectHandler(reg)
+				handler := projectsHandler(reg)
 				handler.ServeHTTP(w, req)
 			default:
 				handler := defaultHandler()
@@ -97,7 +96,7 @@ func namespaceHandler(reg core.Registry) http.HandlerFunc {
 	return http.HandlerFunc(fn)
 }
 
-func baseGetNamespaceHandler(reg core.Registry) http.HandlerFunc {
+func getNamespacesHandler(reg core.Registry) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, req *http.Request) {
 		namespaces, err := reg.NamespaceList()
 		if err != nil {
@@ -167,7 +166,7 @@ func formatNamespaceListV1(namespaces *[]core.Namespace) specV1.NamespaceList {
 	return list
 }
 
-func baseHeadNamespaceHandler(reg core.Registry) http.HandlerFunc {
+func headNamespacesHandler(reg core.Registry) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, req *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}

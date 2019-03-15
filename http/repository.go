@@ -16,7 +16,6 @@ package http
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	"github.com/open-package-management/stori/core"
@@ -24,7 +23,7 @@ import (
 
 var repoContextKey contextKey = "repository"
 
-func baseRepoHandler(reg core.Registry) http.HandlerFunc {
+func repositoriesHandler(reg core.Registry) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, req *http.Request) {
 		if req.URL.Path != "/" {
 
@@ -36,17 +35,17 @@ func baseRepoHandler(reg core.Registry) http.HandlerFunc {
 				repo,
 			)
 
-			handler := repoHandler(reg)
+			handler := repositoryHandler(reg)
 			handler.ServeHTTP(w, req.WithContext(ctx))
 			return
 		}
 
 		switch req.Method {
 		case "GET":
-			handler := baseGetRepoHandler(reg)
+			handler := getRepositoriesHandler(reg)
 			handler.ServeHTTP(w, req)
 		case "HEAD":
-			handler := baseHeadRepoHandler(reg)
+			handler := headRepositoriesHandler(reg)
 			handler.ServeHTTP(w, req)
 		default:
 			handler := defaultHandler()
@@ -57,7 +56,7 @@ func baseRepoHandler(reg core.Registry) http.HandlerFunc {
 	return http.HandlerFunc(fn)
 }
 
-func repoHandler(reg core.Registry) http.HandlerFunc {
+func repositoryHandler(reg core.Registry) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, req *http.Request) {
 
 		if req.URL.Path != "/" {
@@ -73,16 +72,16 @@ func repoHandler(reg core.Registry) http.HandlerFunc {
 
 		switch req.Method {
 		case "GET":
-			handler := getRepoHandler(reg)
+			handler := getRepositoryHandler(reg)
 			handler.ServeHTTP(w, req)
 		case "HEAD":
-			handler := headRepoHandler(reg)
+			handler := headRepositoryHandler(reg)
 			handler.ServeHTTP(w, req)
 		case "PUT":
-			handler := putRepoHandler(reg)
+			handler := putRepositoryHandler(reg)
 			handler.ServeHTTP(w, req)
 		case "DELETE":
-			handler := deleteRepoHandler(reg)
+			handler := deleteRepositoryHandler(reg)
 			handler.ServeHTTP(w, req)
 		default:
 			handler := defaultHandler()
@@ -93,72 +92,44 @@ func repoHandler(reg core.Registry) http.HandlerFunc {
 	return http.HandlerFunc(fn)
 }
 
-func baseGetRepoHandler(reg core.Registry) http.HandlerFunc {
+func getRepositoriesHandler(reg core.Registry) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, req *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		ctx := req.Context()
-		namespace := namespaceFromContext(ctx)
-		project := projectFromContext(ctx)
-		fmt.Fprintf(w, "LIST Repos Handler\nnamespace: %s\nproject: %s", namespace, project)
 	}
 	return http.HandlerFunc(fn)
 }
 
-func baseHeadRepoHandler(reg core.Registry) http.HandlerFunc {
+func headRepositoriesHandler(reg core.Registry) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, req *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		ctx := req.Context()
-		namespace := namespaceFromContext(ctx)
-		project := projectFromContext(ctx)
-		fmt.Fprintf(w, "LIST Repos Handler\nnamespace: %s\nproject: %s", namespace, project)
 	}
 	return http.HandlerFunc(fn)
 }
 
-func getRepoHandler(reg core.Registry) http.HandlerFunc {
+func getRepositoryHandler(reg core.Registry) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, req *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		ctx := req.Context()
-		namespace := namespaceFromContext(ctx)
-		project := projectFromContext(ctx)
-		repo := repoFromContext(ctx)
-		fmt.Fprintf(w, "GET Repo Handler\nnamespace: %s\nproject: %s\nrepo: %s", namespace, project, repo)
 	}
 	return http.HandlerFunc(fn)
 }
 
-func headRepoHandler(reg core.Registry) http.HandlerFunc {
+func headRepositoryHandler(reg core.Registry) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, req *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		ctx := req.Context()
-		namespace := namespaceFromContext(ctx)
-		project := projectFromContext(ctx)
-		repo := repoFromContext(ctx)
-		fmt.Fprintf(w, "GET Repo Handler\nnamespace: %s\nproject: %s\nrepo: %s", namespace, project, repo)
 	}
 	return http.HandlerFunc(fn)
 }
 
-func putRepoHandler(reg core.Registry) http.HandlerFunc {
+func putRepositoryHandler(reg core.Registry) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, req *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		ctx := req.Context()
-		namespace := namespaceFromContext(ctx)
-		project := projectFromContext(ctx)
-		repo := repoFromContext(ctx)
-		fmt.Fprintf(w, "PUT Repo Handler\nnamespace: %s\nproject: %s\nrepo: %s", namespace, project, repo)
 	}
 	return http.HandlerFunc(fn)
 }
 
-func deleteRepoHandler(reg core.Registry) http.HandlerFunc {
+func deleteRepositoryHandler(reg core.Registry) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, req *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		ctx := req.Context()
-		namespace := namespaceFromContext(ctx)
-		project := projectFromContext(ctx)
-		repo := repoFromContext(ctx)
-		fmt.Fprintf(w, "DELETE Repo Handler\nnamespace: %s\nproject: %s\nrepo: %s", namespace, project, repo)
 	}
 	return http.HandlerFunc(fn)
 }

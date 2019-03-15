@@ -32,7 +32,7 @@ func Handler(reg core.Registry) http.HandlerFunc {
 
 		switch resource {
 		case "namespaces":
-			handler := baseNamespaceHandler(reg)
+			handler := namespacesHandler(reg)
 			handler.ServeHTTP(w, req)
 		case "metrics":
 			handler := metricsHandler(reg)
