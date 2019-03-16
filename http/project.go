@@ -19,6 +19,7 @@ import (
 	"net/http"
 
 	"github.com/open-package-management/stori/core"
+	"github.com/open-package-management/stori/http/internal/pathutil"
 )
 
 var projectContextKey contextKey = "project"
@@ -28,7 +29,7 @@ func projectsHandler(reg core.Registry) http.HandlerFunc {
 		if req.URL.Path != "/" {
 
 			var project string
-			project, req.URL.Path = shiftPath(req.URL.Path)
+			project, req.URL.Path = pathutil.ShiftPath(req.URL.Path)
 			ctx := context.WithValue(
 				req.Context(),
 				projectContextKey,
@@ -60,7 +61,7 @@ func projectHandler(reg core.Registry) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, req *http.Request) {
 		if req.URL.Path != "/" {
 			var resource string
-			resource, req.URL.Path = shiftPath(req.URL.Path)
+			resource, req.URL.Path = pathutil.ShiftPath(req.URL.Path)
 			switch resource {
 			case "repositories":
 				handler := repositoriesHandler(reg)

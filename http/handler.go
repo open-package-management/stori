@@ -16,10 +16,10 @@ package http
 
 import (
 	"net/http"
-	"path"
-	"strings"
 
 	"github.com/open-package-management/stori/core"
+
+	"github.com/open-package-management/stori/http/internal/pathutil"
 )
 
 type contextKey string
@@ -28,7 +28,7 @@ type contextKey string
 func Handler(reg core.Registry) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, req *http.Request) {
 		var resource string
-		resource, req.URL.Path = shiftPath(req.URL.Path)
+		resource, req.URL.Path = pathutil.ShiftPath(req.URL.Path)
 
 		switch resource {
 		case "namespaces":
@@ -82,13 +82,4 @@ func notImplementedHandler() http.HandlerFunc {
 		w.WriteHeader(http.StatusNotImplemented)
 	}
 	return http.HandlerFunc(fn)
-}
-
-func shiftPath(p string) (head, tail string) {
-	p = path.Clean("/" + p)
-	i := strings.Index(p[1:], "/") + 1
-	if i <= 0 {
-		return p[1:], "/"
-	}
-	return p[1:i], p[i:]
 }

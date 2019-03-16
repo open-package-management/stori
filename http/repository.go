@@ -19,6 +19,7 @@ import (
 	"net/http"
 
 	"github.com/open-package-management/stori/core"
+	"github.com/open-package-management/stori/http/internal/pathutil"
 )
 
 var repoContextKey contextKey = "repository"
@@ -28,7 +29,7 @@ func repositoriesHandler(reg core.Registry) http.HandlerFunc {
 		if req.URL.Path != "/" {
 
 			var repo string
-			repo, req.URL.Path = shiftPath(req.URL.Path)
+			repo, req.URL.Path = pathutil.ShiftPath(req.URL.Path)
 			ctx := context.WithValue(
 				req.Context(),
 				repoContextKey,
@@ -61,7 +62,7 @@ func repositoryHandler(reg core.Registry) http.HandlerFunc {
 
 		if req.URL.Path != "/" {
 			var resource string
-			resource, req.URL.Path = shiftPath(req.URL.Path)
+			resource, req.URL.Path = pathutil.ShiftPath(req.URL.Path)
 			switch resource {
 			default:
 				handler := defaultHandler()
